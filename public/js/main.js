@@ -5,7 +5,20 @@ var takeAmount = 10;
 
 
 function getRequests(mode) {
-  // your code here...
+    $('#suggestion-compo').hide();
+    $('#'+skeletonId).removeClass('d-none');
+    $.ajax({
+        url         : site_url+'/get-requests',
+        type        : 'post',
+        data        : {"_token" : csrf_token},
+        success:function(response) {
+            $('#'+skeletonId).hide();
+            console.log(response,'res');
+            showHideComponent('request-compo-sent')
+            $('#request-compo-sent').html(response);
+            // $('#request-compo-sent').html(response);
+        }
+    });
 }
 
 function getMoreRequests(mode) {
@@ -58,4 +71,48 @@ function removeConnection(userId, connectionId) {
 
 $(function () {
   //getSuggestions();
+  showHideComponent('suggestion-compo')
 });
+
+let componentsIds = ['suggestion-compo', 'request-compo-sent', 'request-compo-reveive', 'connection-compo'];
+
+$('.btn-check').on('click', function(e) {
+    let id = e.target.id;
+    if(id == 'btnradio1') {
+        showHideComponent('suggestion-compo')
+    }else if(id == 'btnradio2') {
+        getRequests();
+    }else if(id == 'btnradio3') {
+        showHideComponent('request-compo-reveive')
+    }else if(id == 'btnradio4') {
+        showHideComponent('connection-compo')
+    }
+})
+
+function showHideComponent(id) {
+    componentsIds.map(function (cId) {
+        if (cId == id) {
+            $('#'+cId).show();
+        }else{
+            $('#'+cId).hide();
+        }
+    });
+}
+
+function connectBtn(tag) {
+    let thisTag = $(tag);
+    let id      = thisTag.attr('data-id');
+    let data    = {
+        "_token"    : csrf_token,
+        id          : id,
+    }
+    $.ajax({
+        url         : site_url+'/connect',
+        type        : 'post',
+        dataType    : 'json',
+        data        : data,
+        success:function(response) {
+            $('#connection-div-'+id).remove();
+        }
+    });
+}
