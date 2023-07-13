@@ -31,8 +31,8 @@ class HomeController extends Controller
         $requests   = Requests::where('user_id', $userId)
         ->orWhere('requested_user_id', $userId)->get();
 
-        $sentReqs       = $requests->where('status', 'Sent')->all();
-        $receivedReqs   = $requests->where('status', 'Received')->all();
+        $sentReqs       = $requests->where('user_id', $userId)->where('status', 'Sent')->all();
+        $receivedReqs   = $requests->where('requested_user_id', $userId)->where('status', 'Sent')->all();
         $sentReqIds     = collect($sentReqs)->pluck('requested_user_id')->toArray();
         $receivedReqIds = collect($receivedReqs)->pluck('user_id')->toArray();
         $requestsIds    = array_merge($sentReqIds, $receivedReqIds);
@@ -41,23 +41,13 @@ class HomeController extends Controller
         ->orWhere('connected_user_id', $userId)->get();
 
         $connectionsTo      = $connections->where('user_id', $userId)->pluck('connected_user_id')->toArray();
-        $connectionsCount   = count($connectionsTo);
         $connectionsFrom    = $connections->where('connected_user_id', $userId)->pluck('user_id')->toArray();
         $connectionsIds     = array_merge($connectionsTo, $connectionsFrom);
+        $connectionsCount   = count($connectionsIds);
 
         $notSuggestedUsersIds = array_merge($requestsIds, $connectionsIds);
-        $users = User::whereNotIn('id', $notSuggestedUsersIds)->get();
+        $users = User::whereNotIn('id', $notSuggestedUsersIds)->whereNot('id', $userId)->get();
 
         return view('home', compact('sentReqs', 'receivedReqs', 'connectionsCount', 'users'));
-    }
-
-    public function createConnection(Request $request)
-    {
-        Requests::create([
-            'user_id'           => Auth::user()->id,
-            'requested_user_id' => $request->id,
-            'status'            => 'Sent'
-        ]);
-        return response()->json(['status' => 200, 'message' => 'connection created successfully']);
     }
 }

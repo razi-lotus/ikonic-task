@@ -33,7 +33,6 @@
             <div id="request-compo-reveive">
             </div>
             <div id="connection-compo">
-                <x-connection />
             </div>
         </div>
 

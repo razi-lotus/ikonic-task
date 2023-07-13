@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ConnectionController;
 use App\Http\Controllers\RequestController;
 use Illuminate\Support\Facades\Route;
 
@@ -16,5 +17,10 @@ use Illuminate\Support\Facades\Route;
 
 
 
-Route::post('/connect', [App\Http\Controllers\HomeController::class, 'createConnection']);
+Route::post('/connect', [RequestController::class, 'store']);
 Route::post('/get-requests', [RequestController::class, 'index']);
+Route::post('/cancel-requet/{id}', [RequestController::class, 'destroy']);
+Route::post('/accept-requet/{id}', [RequestController::class, 'acceptRequest']);
+
+Route::get('/get-connections', [ConnectionController::class, 'getConnections']);
+Route::post('/remove-connect/{id}', [ConnectionController::class, 'deleteConnection']);

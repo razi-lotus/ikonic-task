@@ -4,19 +4,23 @@ var skipCounter = 0;
 var takeAmount = 10;
 
 
-function getRequests(mode) {
+function getRequests(type) {
     $('#suggestion-compo').hide();
     $('#'+skeletonId).removeClass('d-none');
     $.ajax({
         url         : site_url+'/get-requests',
         type        : 'post',
-        data        : {"_token" : csrf_token},
+        data        : {"_token" : csrf_token, type: type},
         success:function(response) {
             $('#'+skeletonId).hide();
             console.log(response,'res');
-            showHideComponent('request-compo-sent')
-            $('#request-compo-sent').html(response);
-            // $('#request-compo-sent').html(response);
+            if (type == 'Sent') {
+                showHideComponent('request-compo-sent')
+                $('#request-compo-sent').html(response);
+            }else {
+                showHideComponent('request-compo-reveive')
+                $('#request-compo-reveive').html(response);
+            }
         }
     });
 }
@@ -27,7 +31,17 @@ function getMoreRequests(mode) {
 }
 
 function getConnections() {
-  // your code here...
+    $('#suggestion-compo').hide();
+    $('#'+skeletonId).removeClass('d-none');
+    $.ajax({
+        url         : site_url+'/get-connections',
+        type        : 'get',
+        success:function(response) {
+            showHideComponent('connection-compo');
+            $('#connection-compo').html(response);
+            $('#'+skeletonId).hide();
+        }
+    });
 }
 
 function getMoreConnections() {
@@ -57,16 +71,64 @@ function sendRequest(userId, suggestionId) {
   // your code here...
 }
 
-function deleteRequest(userId, requestId) {
-  // your code here...
+function deleteRequest(tag) {
+    let cancelBtn   = $(tag);
+    let id          = cancelBtn.attr('data-id');
+    let data        = {
+        "_token"    : csrf_token,
+        id          : id,
+    }
+    $.ajax({
+        url         : site_url+'/cancel-requet/'+id,
+        type        : 'post',
+        dataType    : 'json',
+        data        : data,
+        success:function(response) {
+            if (response.status == 200) {
+                $('#cancel-request-'+id).remove();
+            }
+        }
+    });
 }
 
-function acceptRequest(userId, requestId) {
-  // your code here...
+function acceptRequest(tag) {
+    let acceptBtn   = $(tag);
+    let id          = acceptBtn.attr('data-id');
+    let data        = {
+        "_token"    : csrf_token,
+        id          : id,
+    }
+    $.ajax({
+        url         : site_url+'/accept-requet/'+id,
+        type        : 'post',
+        dataType    : 'json',
+        data        : data,
+        success:function(response) {
+            if (response.status == 200) {
+                $('#cancel-request-'+id).remove();
+            }
+        }
+    });
 }
 
-function removeConnection(userId, connectionId) {
-  // your code here...
+function removeConnection(tag) {
+    let thisTag = $(tag);
+    let id      = thisTag.attr('data-id');
+    let data    = {
+        "_token"    : csrf_token,
+        id          : id,
+    }
+    $.ajax({
+        url         : site_url+'/remove-connect/'+id,
+        type        : 'post',
+        dataType    : 'json',
+        data        : data,
+        success:function(response) {
+            if (response.status == 200) {
+                $('#connection-'+id).remove();
+            }
+        }
+    });
 }
 
 $(function () {
@@ -81,11 +143,11 @@ $('.btn-check').on('click', function(e) {
     if(id == 'btnradio1') {
         showHideComponent('suggestion-compo')
     }else if(id == 'btnradio2') {
-        getRequests();
+        getRequests('Sent');
     }else if(id == 'btnradio3') {
-        showHideComponent('request-compo-reveive')
+        getRequests('Received');
     }else if(id == 'btnradio4') {
-        showHideComponent('connection-compo')
+        getConnections()
     }
 })
 
@@ -112,7 +174,29 @@ function connectBtn(tag) {
         dataType    : 'json',
         data        : data,
         success:function(response) {
-            $('#connection-div-'+id).remove();
+            if (response.status == 200) {
+                $('#connection-div-'+id).remove();
+            }
+        }
+    });
+}
+
+function cancelRequest(tag) {
+    let cancelBtn   = $(tag);
+    let id          = cancelBtn.attr('data-id');
+    let data        = {
+        "_token"    : csrf_token,
+        id          : id,
+    }
+    $.ajax({
+        url         : site_url+'/cancel-requet/'+id,
+        type        : 'post',
+        dataType    : 'json',
+        data        : data,
+        success:function(response) {
+            if (response.status == 200) {
+                $('#cancel-request-'+id).remove();
+            }
         }
     });
 }

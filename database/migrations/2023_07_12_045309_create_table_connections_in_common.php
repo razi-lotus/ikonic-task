@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('connections_in_common', function (Blueprint $table) {
+        Schema::create('connections', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('user_id')->unsigned();
             $table->bigInteger('connected_user_id')->unsigned();

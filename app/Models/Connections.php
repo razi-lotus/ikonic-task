@@ -17,8 +17,29 @@ class Connections extends Model
         'updated_at'
     ];
 
-    public function getInConnections()
+    public function user()
     {
-        return $this->where('connected_user_id', $this->connected_user_id)->get();
+        if (auth()->user()->id == $this->user_id) {
+            return $this->hasOne(User::class, 'id', 'connected_user_id');
+        }else {
+            return $this->hasOne(User::class, 'id', 'user_id');
+        }
+    }
+
+    public function commonUser()
+    {
+        return $this->hasOne(User::class, 'id', 'connected_user_id');
+    }
+
+    public function getInConnections($connectedTo)
+    {
+        if (auth()->user()->id == $this->user_id) {
+            return $this->with(['commonUser'])->where('user_id', $this->connected_user_id)
+            ->whereIn('connected_user_id', $connectedTo)->get();
+        }else {
+            return $this->with(['commonUser'])->where('user_id', $this->user_id)
+            ->whereIn('connected_user_id', $connectedTo)->get();
+        }
+
     }
 }
