@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ConnectionController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\RequestController;
 use Illuminate\Support\Facades\Route;
 
@@ -24,3 +25,5 @@ Route::post('/accept-requet/{id}', [RequestController::class, 'acceptRequest']);
 
 Route::get('/get-connections', [ConnectionController::class, 'getConnections']);
 Route::post('/remove-connect/{id}', [ConnectionController::class, 'deleteConnection']);
+
+Route::get('/get-more-suggestions', [HomeController::class, 'loadMoreSuggestions']);

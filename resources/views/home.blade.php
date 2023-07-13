@@ -14,10 +14,10 @@
   <div class="container">
     <x-dashboard />
 
-    <x-network_connections :users="$users"
-        :sentReqs="$sentReqs"
-        :receivedReqs='$receivedReqs'
-        :connectionsCount='$connectionsCount'
+    <x-network_connections :users="$suggestionsData['users']"
+        :sentReqs="$suggestionsData['sentReqs']"
+        :receivedReqs="$suggestionsData['receivedReqs']"
+        :connectionsCount="$suggestionsData['connectionsCount']"
     />
   </div>
 @endsection

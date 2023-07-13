@@ -2,6 +2,8 @@ var skeletonId = 'skeleton';
 var contentId = 'content';
 var skipCounter = 0;
 var takeAmount = 10;
+var suggestionPage = 1;
+var connectionPage = 1;
 
 
 function getRequests(type) {
@@ -45,8 +47,21 @@ function getConnections() {
 }
 
 function getMoreConnections() {
-  // Optional: Depends on how you handle the "Load more"-Functionality
-  // your code here...
+    $('#'+skeletonId).removeClass('d-none');
+    connectionPage++;
+    $.ajax({
+        url         : site_url+'/get-connections',
+        type        : 'get',
+        data : {page : connectionPage},
+        success:function(response) {
+            if (response) {
+                $('#connection-compo').append(response);
+            }else {
+                $('#load_more_connections').addClass('d-none');
+            }
+            $('#'+skeletonId).addClass('d-none');
+        }
+    });
 }
 
 function getConnectionsInCommon(userId, connectionId) {
@@ -63,8 +78,21 @@ function getSuggestions() {
 }
 
 function getMoreSuggestions() {
-  // Optional: Depends on how you handle the "Load more"-Functionality
-  // your code here...
+    $('#'+skeletonId).removeClass('d-none');
+    suggestionPage++;
+    $.ajax({
+        url         : site_url+'/get-more-suggestions',
+        type        : 'get',
+        data : {page : suggestionPage},
+        success:function(response) {
+            if (response) {
+                $('#suggestion-compo').append(response);
+            }else {
+                $('#load_more_suggestions').addClass('d-none');
+            }
+            $('#'+skeletonId).addClass('d-none');
+        }
+    });
 }
 
 function sendRequest(userId, suggestionId) {
@@ -142,11 +170,15 @@ $('.btn-check').on('click', function(e) {
     let id = e.target.id;
     if(id == 'btnradio1') {
         showHideComponent('suggestion-compo')
+        $('#load_more_connections').addClass('d-none');
+        $('#load_more_suggestions').show();
     }else if(id == 'btnradio2') {
         getRequests('Sent');
     }else if(id == 'btnradio3') {
         getRequests('Received');
     }else if(id == 'btnradio4') {
+        $('#load_more_suggestions').addClass('d-none');
+        $('#load_more_connections').removeClass('d-none');
         getConnections()
     }
 })

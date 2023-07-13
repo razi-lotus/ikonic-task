@@ -40,8 +40,11 @@
             <x-skeleton />
         </div>
 
-        <div class="d-flex justify-content-center mt-2 py-3 {{-- d-none --}}" id="load_more_btn_parent">
-          <button class="btn btn-primary" onclick="" id="load_more_btn">Load more</button>
+        <div class="d-flex justify-content-center mt-2 py-3 {{-- d-none --}}" id="load_more_suggestions">
+          <button class="btn btn-primary" onclick="getMoreSuggestions()" id="load_more_btn">Load more</button>
+        </div>
+        <div class="d-flex justify-content-center mt-2 py-3 d-none" id="load_more_connections">
+          <button class="btn btn-primary" onclick="getMoreConnections()" id="load_more_btn">Load more</button>
         </div>
       </div>
     </div>

@@ -25,8 +25,28 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index()
+    public function index(Request $request)
     {
+        $suggestionsData = $this->getSuggestionData($request);
+        return view('home', compact('suggestionsData'));
+    }
+
+    public function loadMoreSuggestions(Request $request)
+    {
+        $suggestionsData = $this->getSuggestionData($request);
+        return view('components.suggestion', [
+            'users' => $suggestionsData['users']
+        ]);
+    }
+
+    public function getSuggestionData($request)
+    {
+        $page       = 0;
+        $limit      = 10;
+        if (isset($request->page)) {
+            $page = ($request->page - 1) * $limit;
+        }
+
         $userId     = Auth::user()->id;
         $requests   = Requests::where('user_id', $userId)
         ->orWhere('requested_user_id', $userId)->get();
@@ -46,8 +66,14 @@ class HomeController extends Controller
         $connectionsCount   = count($connectionsIds);
 
         $notSuggestedUsersIds = array_merge($requestsIds, $connectionsIds);
-        $users = User::whereNotIn('id', $notSuggestedUsersIds)->whereNot('id', $userId)->get();
+        $users = User::whereNotIn('id', $notSuggestedUsersIds)
+        ->whereNot('id', $userId)->limit($limit)->offset($page)->get();
 
-        return view('home', compact('sentReqs', 'receivedReqs', 'connectionsCount', 'users'));
+        return [
+            'sentReqs'          => $sentReqs,
+            'receivedReqs'      => $receivedReqs,
+            'connectionsCount'  => $connectionsCount,
+            'users'             => $users
+        ];
     }
 }

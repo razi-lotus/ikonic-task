@@ -12,11 +12,18 @@ class ConnectionController extends Controller
     {
         $this->middleware('auth');
     }
-    public function getConnections()
+    public function getConnections(Request $request)
     {
+        $page       = 0;
+        $limit      = 10;
+        if (isset($request->page)) {
+            $page = ($request->page - 1) * $limit;
+        }
+
         $userId         = Auth::user()->id;
         $connections = Connections::where('user_id', $userId)
-        ->orWhere('connected_user_id', $userId)->get();
+        ->orWhere('connected_user_id', $userId)
+        ->limit($limit)->offset($page)->get();
         $connectedTo    = $connections->where('user_id', $userId)->pluck('connected_user_id');
 
         foreach ($connections as $connection) {
